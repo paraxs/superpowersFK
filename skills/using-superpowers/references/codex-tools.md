@@ -1,18 +1,35 @@
-## Subagent dispatch requires multi-agent support
+# Codex Runtime Notes
 
-Add to your Codex config (`~/.codex/config.toml`):
+## Multi-agent support
+
+Enable multi-agent tools only when needed:
 
 ```toml
 [features]
 multi_agent = true
 ```
 
-This enables `spawn_agent`, `wait_agent`, and `close_agent` for skills like `dispatching-parallel-agents` and `subagent-driven-development`. When using subagent-driven-development, you should always close implementer and reviewer subagents when they have finished all their work.
+This can expose `spawn_agent`, `wait_agent`, and `close_agent` depending on the active Codex runtime.
 
-## Environment Detection
+Do not assume that a generic child-agent dispatch can select a different model or reasoning effort. Confirm the actual tool schema or configured Codex agent profile first. When no explicit per-child selection is available, state that the child inherits the parent configuration.
 
-Skills that create worktrees or finish branches should detect their
-environment with read-only git commands before proceeding:
+Always close completed implementer and reviewer agents.
+
+## Bounded execution
+
+Before using subagent-driven development, enforce the skill's entry gate:
+
+- at least two independent tasks;
+- no more than 8 expected changed files per task;
+- no more than 300 lines per task brief;
+- clear acceptance criteria and verification;
+- no unresolved architecture or destructive production operation.
+
+Stop after two repair/re-review cycles or when the same failure class appears twice.
+
+## Environment detection
+
+Detect an existing linked worktree before creating another:
 
 ```bash
 GIT_DIR=$(cd "$(git rev-parse --git-dir)" 2>/dev/null && pwd -P)
@@ -20,20 +37,26 @@ GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
 BRANCH=$(git branch --show-current)
 ```
 
-- `GIT_DIR != GIT_COMMON` → already in a linked worktree (skip creation)
-- `BRANCH` empty → detached HEAD (cannot branch/push/PR from sandbox)
+- `GIT_DIR != GIT_COMMON` means the workspace is already linked or externally managed.
+- An empty `BRANCH` means detached HEAD.
+- Do not remove a worktree owned by the Codex host.
 
-See `using-git-worktrees` Step 0 and `finishing-a-development-branch`
-Step 1 for how each skill uses these signals.
+## Codex App finishing
 
-## Codex App Finishing
+In an externally managed detached worktree, Codex may be able to test, stage, and commit but not create branches, push, or open pull requests from the sandbox.
 
-When the sandbox blocks branch/push operations (detached HEAD in an
-externally managed worktree), the agent commits all work and informs
-the user to use the App's native controls:
+When blocked:
 
-- **"Create branch"** — names the branch, then commit/push/PR via App UI
-- **"Hand off to local"** — transfers work to the user's local checkout
+- preserve the commits;
+- report the full commit SHA;
+- provide a safe suggested branch name and commit message;
+- use the host's native branch, handoff, push, or PR controls;
+- warn that detached commits must be attached to a branch before workspace cleanup.
 
-The agent can still run tests, stage files, and output suggested branch
-names, commit messages, and PR descriptions for the user to copy.
+## Repository instructions
+
+Read the nearest applicable `AGENTS.md` before changing code. Direct user instructions and repository rules override skill defaults.
+
+## Privacy
+
+Do not start external visual companions, telemetry, or remote helper services unless the user explicitly requests them and understands what leaves the local environment.
