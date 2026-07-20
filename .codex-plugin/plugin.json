@@ -36,8 +36,6 @@
     ],
     "websiteURL": "https://github.com/paraxs/superpowersFK",
     "brandColor": "#8F1D1D",
-    "composerIcon": "./assets/superpowers-small.svg",
-    "logo": "./assets/app-icon.png",
     "screenshots": []
   }
 }
