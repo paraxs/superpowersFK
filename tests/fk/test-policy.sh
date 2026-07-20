@@ -30,7 +30,7 @@ require_text "skills/using-superpowers/SKILL.md" "Tier 3"
 require_text "skills/using-superpowers/SKILL.md" "more than two repair/re-review cycles"
 require_text "skills/brainstorming/SKILL.md" "Do not use this skill when"
 require_text "skills/test-driven-development/SKILL.md" "risk-based"
-require_text "skills/subagent-driven-development/SKILL.md" "maximum 8"
+require_text "skills/subagent-driven-development/SKILL.md" "no more than 8 files"
 require_text "skills/subagent-driven-development/SKILL.md" "300 lines"
 require_text "skills/subagent-driven-development/SKILL.md" "stop and re-plan"
 require_text "skills/using-superpowers/references/codex-tools.md" "inherits the parent configuration"
@@ -47,7 +47,7 @@ forbid_text "README.md" "primeradiant"
 forbid_text ".codex-plugin/plugin.json" "github.com/obra"
 forbid_text ".codex-plugin/plugin.json" "Jesse Vincent"
 
-python3 - <<'PY' "$ROOT/.codex-plugin/plugin.json" || failures=$((failures + 1))
+python3 - "$ROOT/.codex-plugin/plugin.json" <<'PY' || failures=$((failures + 1))
 import json, sys
 path = sys.argv[1]
 with open(path, encoding="utf-8") as f:
