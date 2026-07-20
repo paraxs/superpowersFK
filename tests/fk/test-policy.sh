@@ -119,6 +119,10 @@ required = {
         "Increase evaluation depth with behavioral risk",
         "no installation, commit, push, or external-service action occurs without user intent",
     ),
+    "skills/writing-plans/SKILL.md": (
+        "Do not invoke solely because a Tier 2 change spans several files",
+        "short inline outline when requirements, interfaces, and execution order are already settled",
+    ),
 }
 for relative, snippets in required.items():
     text = read(relative)
@@ -152,8 +156,9 @@ for relative, forbidden in {
 manifest = json.loads(read(".codex-plugin/plugin.json"))
 if manifest.get("name") != "codex-workflow-fk":
     fail("plugin manifest name must be codex-workflow-fk")
-if manifest.get("version") != "1.0.0":
-    fail("plugin manifest version must be 1.0.0")
+package = json.loads(read("package.json"))
+if manifest.get("version") != package.get("version"):
+    fail("plugin manifest and package versions must match")
 if manifest.get("repository") != "https://github.com/paraxs/superpowersFK":
     fail("plugin manifest repository is not FK-owned")
 if "hooks" in manifest:

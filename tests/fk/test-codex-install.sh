@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 CODEX_VERSION="${CODEX_VERSION:-0.144.6}"
+PLUGIN_VERSION="$(node -e 'const fs=require("fs"); console.log(JSON.parse(fs.readFileSync(process.argv[1], "utf8")).version)' "$ROOT/.codex-plugin/plugin.json")"
 WORK="$ROOT/.tmp-codex-install-test-$$"
 MARKETPLACE="$WORK/marketplace"
 PLUGIN="$MARKETPLACE/plugins/codex-workflow-fk"
@@ -55,25 +56,23 @@ grep -Fq "codex-workflow-fk@fk-ci" "$WORK/list-before.txt"
 grep -Fq "not installed" "$WORK/list-before.txt"
 
 $CODEX plugin add codex-workflow-fk@fk-ci --json > "$WORK/plugin-add.json"
-python3 - "$WORK/plugin-add.json" <<'PY'
-import json
-import sys
+node - "$WORK/plugin-add.json" "$PLUGIN_VERSION" <<'JS'
+const fs = require("fs");
+const data = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
+const expectedVersion = process.argv[3];
 
-with open(sys.argv[1], encoding="utf-8") as f:
-    data = json.load(f)
-
-assert data["pluginId"] == "codex-workflow-fk@fk-ci"
-assert data["name"] == "codex-workflow-fk"
-assert data["marketplaceName"] == "fk-ci"
-assert data["version"] == "1.0.0"
-print("PASS: Codex accepted and installed the FK plugin manifest")
-PY
+if (data.pluginId !== "codex-workflow-fk@fk-ci") throw new Error("unexpected plugin id");
+if (data.name !== "codex-workflow-fk") throw new Error("unexpected plugin name");
+if (data.marketplaceName !== "fk-ci") throw new Error("unexpected marketplace name");
+if (data.version !== expectedVersion) throw new Error("unexpected plugin version");
+console.log("PASS: Codex accepted and installed the FK plugin manifest");
+JS
 
 $CODEX plugin list > "$WORK/list-after.txt"
 grep -Fq "codex-workflow-fk@fk-ci" "$WORK/list-after.txt"
 grep -Fq "installed, enabled" "$WORK/list-after.txt"
 
-CACHE="$CODEX_HOME/plugins/cache/fk-ci/codex-workflow-fk/1.0.0"
+CACHE="$CODEX_HOME/plugins/cache/fk-ci/codex-workflow-fk/$PLUGIN_VERSION"
 test -f "$CACHE/.codex-plugin/plugin.json"
 cmp "$ROOT/.codex-plugin/plugin.json" "$CACHE/.codex-plugin/plugin.json"
 

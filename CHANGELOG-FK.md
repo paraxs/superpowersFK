@@ -1,5 +1,11 @@
 # Codex Workflow FK Changelog
 
+## 1.0.1
+
+- Kept settled six-file Tier 2 changes on a short inline outline unless interfaces or execution order remain complex.
+- Made isolated and remote installation tests independent of Python and safe for long Windows repository paths.
+- Made installation assertions derive the expected plugin version from the manifest.
+
 ## 1.0.0
 
 - Replaced universal skill activation with four proportional risk tiers.
