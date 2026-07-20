@@ -1,14 +1,15 @@
 {
-  "name": "superpowers-dev",
+  "name": "codex-workflow-fk",
   "interface": {
-    "displayName": "Superpowers Dev"
+    "displayName": "Codex Workflow FK"
   },
   "plugins": [
     {
-      "name": "superpowers",
+      "name": "codex-workflow-fk",
       "source": {
         "source": "url",
-        "url": "./"
+        "url": "https://github.com/paraxs/superpowersFK.git",
+        "ref": "main"
       },
       "policy": {
         "installation": "AVAILABLE",
