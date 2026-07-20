@@ -58,7 +58,10 @@ ACTIVE_PATHS=(
 )
 
 for forbidden in "github.com/obra" "Jesse Vincent" "primeradiant" "fsck.com"; do
-  if grep -RFIq --exclude-dir=.git "$forbidden" "${ACTIVE_PATHS[@]}"; then
+  matches="$(grep -RFIn --exclude-dir=.git "$forbidden" "${ACTIVE_PATHS[@]}" || true)"
+  if [[ -n "$matches" ]]; then
+    echo "Forbidden upstream reference '$forbidden' found at:" >&2
+    printf '%s\n' "$matches" >&2
     fail "active Codex surfaces contain forbidden upstream reference: $forbidden"
   fi
 done
