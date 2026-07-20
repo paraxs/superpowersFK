@@ -1,6 +1,6 @@
 ---
 name: writing-plans
-description: Use when a Tier 2 or Tier 3 change needs a durable multi-step implementation plan. Do not invoke for focused changes where a short outline is sufficient.
+description: Use when a Tier 3 change, unresolved interfaces, high-risk rollout, or complex dependency chain makes a short implementation outline insufficient. Do not invoke solely because a Tier 2 change spans several files.
 ---
 
 # Proportional Implementation Plans
@@ -13,13 +13,13 @@ Create an executable plan that reduces uncertainty without duplicating the repos
 
 Use a durable plan when one or more apply:
 
-- more than three coordinated files are likely to change;
-- tasks have dependencies or interfaces that must be preserved;
+- the task is Tier 3;
+- a Tier 2 outline cannot safely capture task dependencies or interfaces;
 - migration, rollback, security, concurrency, permissions, or production data matter;
-- multiple independently testable tasks exist;
+- multiple independently testable tasks require a durable handoff or staged execution;
 - the user explicitly requests a written plan.
 
-For a focused Tier 1 change, use a short inline outline instead.
+Do not invoke solely because a Tier 2 change spans several files. Use the router's short inline outline when requirements, interfaces, and execution order are already settled. Tier 1 work normally needs no plan artifact.
 
 ## Required plan header
 

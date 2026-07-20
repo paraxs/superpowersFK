@@ -1,6 +1,6 @@
 {
   "name": "codex-workflow-fk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Pragmatic, preservation-first planning, debugging, testing, review, and bounded multi-agent workflows for Codex.",
   "author": {
     "name": "Franz Kofler",

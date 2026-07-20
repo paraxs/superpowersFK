@@ -4,7 +4,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 CODEX_VERSION="${CODEX_VERSION:-0.144.6}"
 REMOTE_REPOSITORY="${REMOTE_REPOSITORY:-paraxs/superpowersFK}"
-WORK="$ROOT/.tmp-codex-remote-main-test-$$"
+PLUGIN_VERSION="$(node -e 'const fs=require("fs"); console.log(JSON.parse(fs.readFileSync(process.argv[1], "utf8")).version)' "$ROOT/.codex-plugin/plugin.json")"
+WORK="$(mktemp -d "${TMPDIR:-/tmp}/codex-fk-remote-main.XXXXXX")"
 CODEX_HOME="$WORK/codex-home"
 NPM_PREFIX="$WORK/npm"
 
@@ -24,25 +25,23 @@ grep -Fq "codex-workflow-fk@codex-workflow-fk" "$WORK/list-before.txt"
 grep -Fq "not installed" "$WORK/list-before.txt"
 
 "$CODEX" plugin add codex-workflow-fk@codex-workflow-fk --json > "$WORK/plugin-add.json"
-python3 - "$WORK/plugin-add.json" <<'PY'
-import json
-import sys
+node - "$WORK/plugin-add.json" "$PLUGIN_VERSION" <<'JS'
+const fs = require("fs");
+const data = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
+const expectedVersion = process.argv[3];
 
-with open(sys.argv[1], encoding="utf-8") as f:
-    data = json.load(f)
-
-assert data["pluginId"] == "codex-workflow-fk@codex-workflow-fk"
-assert data["name"] == "codex-workflow-fk"
-assert data["marketplaceName"] == "codex-workflow-fk"
-assert data["version"] == "1.0.0"
-print("PASS: Codex installed the FK plugin from the remote main marketplace")
-PY
+if (data.pluginId !== "codex-workflow-fk@codex-workflow-fk") throw new Error("unexpected plugin id");
+if (data.name !== "codex-workflow-fk") throw new Error("unexpected plugin name");
+if (data.marketplaceName !== "codex-workflow-fk") throw new Error("unexpected marketplace name");
+if (data.version !== expectedVersion) throw new Error("unexpected plugin version");
+console.log("PASS: Codex installed the FK plugin from the remote main marketplace");
+JS
 
 "$CODEX" plugin list > "$WORK/list-after.txt"
 grep -Fq "codex-workflow-fk@codex-workflow-fk" "$WORK/list-after.txt"
 grep -Fq "installed, enabled" "$WORK/list-after.txt"
 
-CACHE="$CODEX_HOME/plugins/cache/codex-workflow-fk/codex-workflow-fk/1.0.0"
+CACHE="$CODEX_HOME/plugins/cache/codex-workflow-fk/codex-workflow-fk/$PLUGIN_VERSION"
 test -f "$CACHE/.codex-plugin/plugin.json"
 test -f "$CACHE/skills/using-codex-workflow/SKILL.md"
 
