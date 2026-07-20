@@ -2,10 +2,11 @@
 
 ## Proven
 
-The repository now has two automated GitHub Actions checks:
+The repository now has three automated GitHub Actions checks:
 
 - policy and independence validation;
-- installation with the real Codex CLI 0.144.6.
+- isolated installation with the real Codex CLI 0.144.6;
+- remote marketplace installation from GitHub `main` after merge.
 
 The installation test proves that Codex:
 
@@ -16,16 +17,18 @@ The installation test proves that Codex:
 - includes the complete skills tree and critical workflow skills;
 - writes the enabled plugin entry to Codex configuration.
 
-## Still requiring authenticated acceptance sessions
+The remote test additionally proves that Codex can register `paraxs/superpowersFK --ref main`, install the published marketplace plugin, and discover the FK router from the cached package.
 
-Installation proves packaging and discovery artifacts, not the decisions produced by a model. Recorded Codex sessions are still required for:
+Four authenticated fresh-process sessions using installed plugin 1.0.1 and GPT-5.5 passed the Tier 1, Tier 2, Tier 3, and circuit-breaker scenarios. The Tier 2 run initially found a plan-routing contradiction in 1.0.0; version 1.0.1 corrected it and the repeated run passed. See [the recorded run](acceptance-runs/2026-07-20.md).
 
-- automatic selection of the appropriate skill in a real conversation;
-- Tier 1 routing;
-- Tier 2 routing;
-- Tier 3 planning;
-- SDD circuit-breaker behavior;
+## Still requiring runtime acceptance
+
+The current evidence is one controlled run per routing scenario. Additional evidence is still required for:
+
+- repeated routing runs across different prompt formulations and models;
+- end-to-end implementation sessions that edit and verify real code;
 - child-agent lifecycle;
 - per-agent model/profile behavior in the installed Codex version.
+- Codex App behavior separately from CLI behavior.
 
-Do not claim these model-level runtime behaviors are proven until the corresponding sessions have been executed and recorded.
+Do not generalize the controlled routing results beyond the recorded runtime and scenario shapes.
