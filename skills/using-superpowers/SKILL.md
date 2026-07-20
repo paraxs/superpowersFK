@@ -1,62 +1,129 @@
 ---
 name: using-superpowers
-description: Use when starting any conversation - establishes how to find and use skills, requiring skill invocation before ANY response including clarifying questions
+description: Use at the start of coding work to choose the smallest reliable workflow for the task. Applies repository and user instructions first, classifies risk, and invokes only the skills that add measurable value.
 ---
 
-<SUBAGENT-STOP>
-If you were dispatched as a subagent to execute a specific task, ignore this skill.
-</SUBAGENT-STOP>
+# Using Superpowers FK
 
-<EXTREMELY-IMPORTANT>
-If you think there is even a 1% chance a skill might apply to what you are doing, you ABSOLUTELY MUST invoke the skill.
+## Purpose
 
-IF A SKILL APPLIES TO YOUR TASK, YOU DO NOT HAVE A CHOICE. YOU MUST USE IT.
+Choose a workflow that is proportional to the task. The goal is reliable software, not ceremony.
 
-This is not negotiable. You cannot rationalize your way out of this.
-</EXTREMELY-IMPORTANT>
+**Priority order:**
 
-## The Rule
+1. Direct user instructions
+2. Repository instructions such as `AGENTS.md`
+3. This routing policy
+4. Individual skill defaults
+5. General agent behavior
 
-**Invoke relevant or requested skills BEFORE any response or action** — including clarifying questions, exploring the codebase, or checking files. If it turns out wrong for the situation, you don't have to use it.
+Never repeat questions already answered by the prompt, repository, issue, specification, or prior instructions.
 
-**Before entering plan mode:** if you haven't already brainstormed, invoke the brainstorming skill first.
+## Step 1: Read the operating context
 
-Then announce "Using [skill] to [purpose]" and follow the skill exactly. If it has a checklist, create a todo per item.
+Before changing code:
 
-## Skill Priority
+- identify the repository root, current branch, and workspace state;
+- read the nearest applicable `AGENTS.md` or equivalent instructions;
+- inspect the files and recent changes relevant to the request;
+- preserve existing behavior, UI, exports, and public interfaces unless the request explicitly changes them.
 
-When multiple skills apply, process skills come first — they set the approach, then implementation skills (frontend-design, etc.) carry it out. Brainstorming and systematic-debugging are Superpowers' most common process skills, but the rule holds for any of them.
+Do not explore unrelated parts of the repository.
 
-- "Let's build X" → superpowers:brainstorming first, then implementation skills.
-- "Fix this bug" → superpowers:systematic-debugging first, then domain skills.
+## Step 2: Classify the task
 
-## Red Flags
+### Tier 0 — explanation or inspection
 
-These thoughts mean STOP—you're rationalizing:
+Examples: answer a code question, summarize a diff, inspect architecture, review a plan.
 
-| Thought | Reality |
-|---------|---------|
-| "This is just a simple question" | Questions are tasks. Check for skills. |
-| "I need more context first" | Skill check comes BEFORE clarifying questions. |
-| "Let me explore the codebase first" | Skills tell you HOW to explore. Check first. |
-| "I can check git/files quickly" | Files lack conversation context. Check for skills. |
-| "Let me gather information first" | Skills tell you HOW to gather information. |
-| "This doesn't need a formal skill" | If a skill exists, use it. |
-| "I remember this skill" | Skills evolve. Read current version. |
-| "This doesn't count as a task" | Action = task. Check for skills. |
-| "The skill is overkill" | Simple things become complex. Use it. |
-| "I'll just do this one thing first" | Check BEFORE doing anything. |
-| "This feels productive" | Undisciplined action wastes time. Skills prevent this. |
-| "I know what that means" | Knowing the concept ≠ using the skill. Invoke it. |
+- Do not create a plan, worktree, tests, commits, or subagents unless requested.
+- Read only what is needed and report evidence.
 
-## Platform Adaptation
+### Tier 1 — focused change
 
-If your harness appears here, read its reference file for special instructions:
+Use when all are true:
 
-- Codex: `references/codex-tools.md`
-- Pi: `references/pi-tools.md`
-- Antigravity: `references/antigravity-tools.md`
+- requirements and acceptance criteria are clear;
+- the change is local and expected to touch at most 3 closely related files;
+- no architecture, migration, security boundary, or shared-state redesign is involved.
 
-## User Instructions
+Default workflow:
 
-User instructions (CLAUDE.md, AGENTS.md, GEMINI.md, etc, direct requests) take precedence over skills, which in turn override default behavior. Only skip skill workflows or instructions when your human partner has explicitly told you to.
+1. inspect the relevant code and tests;
+2. reproduce or establish evidence for the problem when fixing a bug;
+3. make the smallest coherent change;
+4. run targeted verification;
+5. inspect the diff for accidental changes;
+6. report files changed, commands run, results, and remaining risk.
+
+Do **not** automatically invoke brainstorming, writing-plans, worktrees, or subagent-driven development.
+
+### Tier 2 — structured change
+
+Use when one or more apply:
+
+- 4–8 files are likely to change;
+- several components must coordinate;
+- rollback or migration behavior matters;
+- the change modifies business logic, persistence, APIs, retrieval, permissions, or deployment.
+
+Default workflow:
+
+1. write a short implementation outline with boundaries and verification;
+2. use an isolated worktree when the current environment is not already isolated;
+3. apply risk-based TDD;
+4. implement in small reversible commits when commits are part of the task;
+5. perform focused review and broader regression verification.
+
+Invoke `writing-plans` only when the outline is not sufficient to execute safely.
+
+### Tier 3 — architectural or high-risk change
+
+Use when one or more apply:
+
+- more than 8 files or multiple independent subsystems are involved;
+- architecture or product decisions remain unresolved;
+- authentication, authorization, destructive migration, concurrency, security, billing, backup/restore, or production data are affected;
+- the user explicitly requests design-first development or multi-agent execution.
+
+Default workflow:
+
+1. use `brainstorming` only for unresolved decisions;
+2. create a written design and implementation plan;
+3. use an isolated workspace;
+4. split work into independently testable tasks;
+5. use `subagent-driven-development` only after its preflight limits pass;
+6. apply final whole-change review and full relevant verification.
+
+## Skill routing
+
+- Bug, test failure, unexpected behavior: `systematic-debugging`
+- Business logic or regression with practical automated tests: `test-driven-development`
+- Multi-step work requiring a durable plan: `writing-plans`
+- Existing approved plan with bounded independent tasks: `subagent-driven-development`
+- Substantial work needing isolation: `using-git-worktrees`
+- Before any completion claim: `verification-before-completion`
+- Branch integration or PR decision: `finishing-a-development-branch`
+
+A skill is a tool, not a mandatory ritual. Invoke it when its entry conditions are met or the user explicitly requests it.
+
+## Global preservation rules
+
+- Do not rewrite complete files when a targeted edit is sufficient.
+- Do not perform unrelated refactoring.
+- Do not remove working features, buttons, exports, compatibility behavior, or tests without explicit approval.
+- Do not silently change dependencies or lockfiles.
+- Do not claim success from an agent report alone; verify independently.
+- Do not push, merge, delete, or force-update branches without explicit user intent.
+
+## Escalation
+
+Stop and re-plan instead of continuing when:
+
+- the task grows beyond its assigned tier;
+- the same failure class appears twice after attempted fixes;
+- more than two repair/re-review cycles are needed;
+- the change exceeds 8 files inside one task;
+- evidence contradicts the plan or acceptance criteria.
+
+Report the concrete evidence and the smallest safe next decision.
