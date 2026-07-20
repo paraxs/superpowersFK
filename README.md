@@ -49,13 +49,29 @@ Multiple subsystems, unresolved architecture, security, concurrency, destructive
 
 ## Codex installation
 
-This repository is intended to be installed as a custom Codex plugin or used as a source for personal/project skills.
+Install the current Codex CLI:
 
-Repository:
-
-```text
-https://github.com/paraxs/superpowersFK
+```bash
+npm install -g @openai/codex
 ```
+
+After the FK changes are merged into `main`, register this repository as a marketplace and install the plugin:
+
+```bash
+codex plugin marketplace add paraxs/superpowersFK --ref main
+codex plugin add codex-workflow-fk@codex-workflow-fk
+codex plugin list
+```
+
+The final command must show `codex-workflow-fk@codex-workflow-fk` as `installed, enabled`.
+
+For a reproducible installation test of the current checkout without changing the user's global Codex configuration:
+
+```bash
+CODEX_VERSION=0.144.6 bash tests/fk/test-codex-install.sh
+```
+
+The test installs Codex into a temporary directory, stages the current manifest and complete skills tree, installs the plugin through a local Codex marketplace, checks the cached copy and enabled configuration, and removes all temporary files afterwards.
 
 For Codex CLI multi-agent workflows, enable the feature in `~/.codex/config.toml`:
 
