@@ -1,6 +1,6 @@
 # Quality Scorecard
 
-The current FK branch targets a minimum score of 9/10 in every operational category.
+The current FK plugin targets a minimum self-assessed score of 9/10 in every operational category.
 
 | Category | Target | Repository control |
 |---|---:|---|
@@ -15,4 +15,4 @@ The current FK branch targets a minimum score of 9/10 in every operational categ
 | Maintainability | 9+ | Smaller skills and policy regression tests |
 | Transparency | 9+ | Evidence and remaining-risk reporting |
 
-A score of 10 requires repeated real Codex acceptance runs, not documentation alone.
+One controlled run each for Tier 1, Tier 2, Tier 3, and the circuit breaker is recorded in [the 2026-07-20 acceptance run](acceptance-runs/2026-07-20.md). A score of 10 still requires repeated prompts, end-to-end implementation runs, and independent evaluation.

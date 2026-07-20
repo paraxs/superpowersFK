@@ -57,7 +57,7 @@ Install the current Codex CLI:
 npm install -g @openai/codex
 ```
 
-After the FK changes are merged into `main`, register this repository as a marketplace and install the plugin:
+Register this repository's `main` branch as a marketplace and install the plugin:
 
 ```bash
 codex plugin marketplace add paraxs/superpowersFK --ref main
@@ -82,6 +82,10 @@ CODEX_VERSION=0.144.6 bash tests/fk/test-remote-main-install.sh
 ```
 
 This second test clones the published marketplace from `main`, installs `codex-workflow-fk@codex-workflow-fk`, and verifies that the FK router is present in Codex's cache.
+
+## Runtime acceptance
+
+The [2026-07-20 acceptance run](docs/acceptance-runs/2026-07-20.md) records exact Tier 1, Tier 2, Tier 3, and circuit-breaker prompts and responses from fresh Codex CLI processes using installed plugin 1.0.1. It also records the Tier 2 contradiction found in 1.0.0 and the corrective follow-up.
 
 For Codex CLI multi-agent workflows, enable the feature in `~/.codex/config.toml`:
 
