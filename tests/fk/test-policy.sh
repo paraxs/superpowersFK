@@ -2,99 +2,183 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-failures=0
 
-fail() {
-  echo "FAIL: $*" >&2
-  failures=$((failures + 1))
-}
-
-require_text() {
-  local file="$1"
-  local text="$2"
-  grep -Fq "$text" "$ROOT/$file" || fail "$file missing required text: $text"
-}
-
-forbid_text() {
-  local file="$1"
-  local text="$2"
-  if grep -Fq "$text" "$ROOT/$file"; then
-    fail "$file contains forbidden text: $text"
-  fi
-}
-
-require_text "skills/using-superpowers/SKILL.md" "Tier 0"
-require_text "skills/using-superpowers/SKILL.md" "Tier 1"
-require_text "skills/using-superpowers/SKILL.md" "Tier 2"
-require_text "skills/using-superpowers/SKILL.md" "Tier 3"
-require_text "skills/using-superpowers/SKILL.md" "more than two repair/re-review cycles"
-require_text "skills/brainstorming/SKILL.md" "Do not use this skill when"
-require_text "skills/test-driven-development/SKILL.md" "risk-based"
-require_text "skills/subagent-driven-development/SKILL.md" "no more than 8 files"
-require_text "skills/subagent-driven-development/SKILL.md" "300 lines"
-require_text "skills/subagent-driven-development/SKILL.md" "stop and re-plan"
-require_text "skills/using-superpowers/references/codex-tools.md" "inherits the parent configuration"
-require_text "AGENTS.md" "Preserve working behavior"
-require_text "README.md" "Codex Workflow FK"
-require_text "README.md" "codex plugin add codex-workflow-fk@codex-workflow-fk"
-require_text ".codex-plugin/plugin.json" '"name": "codex-workflow-fk"'
-require_text ".codex-plugin/plugin.json" '"hooks": {}'
-require_text ".agents/plugins/marketplace.json" '"name": "codex-workflow-fk"'
-require_text ".agents/plugins/marketplace.json" '"url": "https://github.com/paraxs/superpowersFK.git"'
-
-forbid_text "skills/using-superpowers/SKILL.md" "even a 1% chance"
-forbid_text "skills/brainstorming/SKILL.md" "This applies to EVERY project"
-forbid_text "skills/test-driven-development/SKILL.md" "Delete code. Start over"
-forbid_text ".agents/plugins/marketplace.json" '"name": "superpowers"'
-forbid_text ".agents/plugins/marketplace.json" '"name": "superpowers-dev"'
-
-ACTIVE_PATHS=(
-  "$ROOT/.codex-plugin"
-  "$ROOT/.agents/plugins"
-  "$ROOT/skills"
-  "$ROOT/README.md"
-  "$ROOT/AGENTS.md"
-  "$ROOT/package.json"
-)
-
-for forbidden in "github.com/obra" "Jesse Vincent" "primeradiant" "fsck.com"; do
-  matches="$(grep -RFIn --exclude-dir=.git "$forbidden" "${ACTIVE_PATHS[@]}" || true)"
-  if [[ -n "$matches" ]]; then
-    echo "Forbidden upstream reference '$forbidden' found at:" >&2
-    printf '%s\n' "$matches" >&2
-    fail "active Codex surfaces contain forbidden upstream reference: $forbidden"
-  fi
-done
-
-python3 - "$ROOT/.codex-plugin/plugin.json" "$ROOT/.agents/plugins/marketplace.json" <<'PY' || failures=$((failures + 1))
+python3 - "$ROOT" <<'PY'
 import json
+import pathlib
+import re
+import subprocess
 import sys
 
-manifest_path, marketplace_path = sys.argv[1:]
-with open(manifest_path, encoding="utf-8") as f:
-    manifest = json.load(f)
-with open(marketplace_path, encoding="utf-8") as f:
-    marketplace = json.load(f)
+root = pathlib.Path(sys.argv[1])
+errors: list[str] = []
 
-assert manifest["name"] == "codex-workflow-fk"
-assert manifest["version"] == "1.0.0"
-assert manifest["hooks"] == {}
-assert manifest["repository"] == "https://github.com/paraxs/superpowersFK"
+def fail(message: str) -> None:
+    errors.append(message)
 
-assert marketplace["name"] == "codex-workflow-fk"
-assert marketplace["interface"]["displayName"] == "Codex Workflow FK"
-assert len(marketplace["plugins"]) == 1
-entry = marketplace["plugins"][0]
-assert entry["name"] == "codex-workflow-fk"
-assert entry["source"]["source"] == "url"
-assert entry["source"]["url"] == "https://github.com/paraxs/superpowersFK.git"
-assert entry["source"]["ref"] == "main"
-print("PASS: plugin and marketplace metadata are valid and FK-owned")
+def read(relative: str) -> str:
+    return (root / relative).read_text(encoding="utf-8")
+
+tracked = subprocess.check_output(
+    ["git", "-C", str(root), "ls-files"], text=True, encoding="utf-8"
+).splitlines()
+
+case_map: dict[str, list[str]] = {}
+for path in tracked:
+    case_map.setdefault(path.casefold(), []).append(path)
+for paths in case_map.values():
+    if len(paths) > 1:
+        fail("case-insensitive path collision: " + " | ".join(paths))
+
+skill_files = sorted((root / "skills").glob("*/SKILL.md"))
+if len(skill_files) != 14:
+    fail(f"expected 14 skills, found {len(skill_files)}")
+
+for path in skill_files:
+    text = path.read_text(encoding="utf-8")
+    relative = path.relative_to(root).as_posix()
+    lines = text.splitlines()
+    if len(lines) > 500:
+        fail(f"{relative} exceeds 500 lines: {len(lines)}")
+    match = re.match(
+        r"^---\nname: ([a-z0-9-]+)\ndescription: (.+?)\n---\n",
+        text,
+        flags=re.DOTALL,
+    )
+    if not match:
+        fail(f"{relative} has invalid frontmatter")
+        continue
+    name, description = match.groups()
+    if name != path.parent.name:
+        fail(f"{relative} name does not match folder: {name}")
+    if "Use when" not in description:
+        fail(f"{relative} description lacks a concrete 'Use when' trigger")
+
+writing_lines = len(read("skills/writing-skills/SKILL.md").splitlines())
+if writing_lines > 180:
+    fail(f"writing-skills must stay concise (<=180 lines), found {writing_lines}")
+
+active_paths = [
+    root / ".codex-plugin",
+    root / ".agents" / "plugins",
+    root / "skills",
+    root / "README.md",
+    root / "AGENTS.md",
+    root / "package.json",
+]
+active_files: list[pathlib.Path] = []
+for path in active_paths:
+    if path.is_dir():
+        active_files.extend(p for p in path.rglob("*") if p.is_file())
+    elif path.is_file():
+        active_files.append(path)
+
+for path in active_files:
+    try:
+        text = path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        continue
+    relative = path.relative_to(root).as_posix()
+    for forbidden in (
+        "superpowers:",
+        "your human partner",
+        "Superpowers works",
+        ".superpowers/",
+        "Anthropic",
+        "Claude Code",
+        "github.com/obra",
+        "Jesse Vincent",
+        "primeradiant",
+        "fsck.com",
+    ):
+        if forbidden.casefold() in text.casefold():
+            fail(f"{relative} contains forbidden active-surface text: {forbidden}")
+
+if (root / "skills" / "using-superpowers").exists():
+    fail("legacy skills/using-superpowers directory still exists")
+
+required = {
+    "skills/using-codex-workflow/SKILL.md": (
+        "Tier 0",
+        "Tier 1",
+        "Tier 2",
+        "Tier 3",
+        "more than two repair/re-review cycles",
+    ),
+    "skills/executing-plans/SKILL.md": (
+        "Subagent availability alone is not a reason to delegate",
+    ),
+    "skills/requesting-code-review/SKILL.md": (
+        "Do not create review ceremony for a focused Tier 1 change",
+    ),
+    "skills/using-git-worktrees/SKILL.md": (
+        "do not edit or commit `.gitignore` automatically",
+        "Do not run package installation merely because a manifest exists",
+    ),
+    "skills/writing-skills/SKILL.md": (
+        "Increase evaluation depth with behavioral risk",
+        "no installation, commit, push, or external-service action occurs without user intent",
+    ),
+}
+for relative, snippets in required.items():
+    text = read(relative)
+    for snippet in snippets:
+        if snippet not in text:
+            fail(f"{relative} missing required policy: {snippet}")
+
+for relative, forbidden in {
+    "skills/executing-plans/SKILL.md": (
+        "If subagents are available",
+        "superpowers:",
+    ),
+    "skills/requesting-code-review/SKILL.md": (
+        'Skip review because "it\'s simple"',
+    ),
+    "skills/using-git-worktrees/SKILL.md": (
+        "Add to .gitignore, commit the change",
+        "if [ -f package.json ]; then npm install",
+    ),
+    "skills/writing-skills/SKILL.md": (
+        "Delete it. Start over",
+        "push to your fork",
+        "NO SKILL WITHOUT A FAILING TEST FIRST",
+    ),
+}.items():
+    text = read(relative)
+    for snippet in forbidden:
+        if snippet in text:
+            fail(f"{relative} contains contradictory policy: {snippet}")
+
+manifest = json.loads(read(".codex-plugin/plugin.json"))
+if manifest.get("name") != "codex-workflow-fk":
+    fail("plugin manifest name must be codex-workflow-fk")
+if manifest.get("version") != "1.0.0":
+    fail("plugin manifest version must be 1.0.0")
+if manifest.get("repository") != "https://github.com/paraxs/superpowersFK":
+    fail("plugin manifest repository is not FK-owned")
+if "hooks" in manifest:
+    fail("plugin manifest must omit unsupported hooks metadata")
+
+marketplace = json.loads(read(".agents/plugins/marketplace.json"))
+if marketplace.get("name") != "codex-workflow-fk":
+    fail("marketplace name must be codex-workflow-fk")
+plugins = marketplace.get("plugins", [])
+if len(plugins) != 1:
+    fail("marketplace must contain exactly one plugin")
+else:
+    entry = plugins[0]
+    if entry.get("name") != "codex-workflow-fk":
+        fail("marketplace plugin name mismatch")
+    source = entry.get("source", {})
+    if source.get("url") != "https://github.com/paraxs/superpowersFK.git":
+        fail("marketplace source URL mismatch")
+    if source.get("ref") != "main":
+        fail("marketplace source must target main")
+
+if errors:
+    for error in errors:
+        print(f"FAIL: {error}", file=sys.stderr)
+    raise SystemExit(f"{len(errors)} policy test(s) failed")
+
+print(f"PASS: FK policy, namespace, manifest, and {len(skill_files)} skills are consistent")
 PY
-
-if (( failures > 0 )); then
-  echo "$failures policy test(s) failed" >&2
-  exit 1
-fi
-
-echo "PASS: Codex Workflow FK policy checks"

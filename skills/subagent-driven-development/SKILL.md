@@ -1,6 +1,6 @@
 ---
 name: subagent-driven-development
-description: Use only for an approved implementation plan with several bounded, mostly independent tasks that benefit from isolated implementer and reviewer context. Includes strict size, retry, and cost circuit breakers.
+description: Execute an approved implementation plan through bounded implementer and reviewer contexts with strict size, retry, and cost circuit breakers. Use when several mostly independent tasks pass the complete multi-agent entry gate.
 ---
 
 # Bounded Subagent-Driven Development

@@ -6,9 +6,11 @@
   "license": "MIT",
   "repository": "https://github.com/paraxs/superpowersFK",
   "scripts": {
-    "test": "bash tests/fk/test-policy.sh && bash tests/fk/test-codex-install.sh",
+    "test": "bash tests/fk/test-policy.sh && bash tests/fk/test-sdd-workspace.sh && bash tests/fk/test-codex-install.sh",
     "test:policy": "bash tests/fk/test-policy.sh",
-    "test:codex-install": "bash tests/fk/test-codex-install.sh"
+    "test:sdd-workspace": "bash tests/fk/test-sdd-workspace.sh",
+    "test:codex-install": "bash tests/fk/test-codex-install.sh",
+    "test:remote-main": "bash tests/fk/test-remote-main-install.sh"
   },
   "keywords": [
     "codex",

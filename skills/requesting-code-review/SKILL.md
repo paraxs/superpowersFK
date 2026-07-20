@@ -1,103 +1,70 @@
 ---
 name: requesting-code-review
-description: Use when completing tasks, implementing major features, or before merging to verify work meets requirements
+description: Prepare and request an independent, evidence-based code review. Use when changes are non-trivial or high-risk, before merging consequential work, or when a fresh reviewer is likely to find issues that focused verification cannot.
 ---
 
 # Requesting Code Review
 
-Dispatch a code reviewer subagent to catch issues before they cascade. The reviewer gets precisely crafted context for evaluation — never your session's history. This keeps the reviewer focused on the work product, not your thought process, and preserves your own context for continued work.
+## Purpose
 
-**Core principle:** Review early, review often.
+Use independent review where it adds measurable confidence. Do not create review ceremony for a focused Tier 1 change that is already well covered by tests and diff inspection.
 
-## When to Request Review
+## Choose the review level
 
-**Mandatory:**
-- After each task in subagent-driven development
-- After completing major feature
-- Before merge to main
+### Self-review
 
-**Optional but valuable:**
-- When stuck (fresh perspective)
-- Before refactoring (baseline check)
-- After fixing complex bug
+Use for focused, low-risk changes:
 
-## How to Request
+- inspect the complete diff;
+- compare it with the request;
+- run targeted verification;
+- check for accidental scope and compatibility changes.
 
-**1. Get git SHAs:**
-```bash
-BASE_SHA=$(git rev-parse HEAD~1)  # or origin/main
-HEAD_SHA=$(git rev-parse HEAD)
-```
+### Independent review
 
-**2. Dispatch code reviewer subagent:**
+Use when one or more apply:
 
-Dispatch a `general-purpose` subagent, filling the template at [code-reviewer.md](code-reviewer.md)
+- architecture, security, migration, permissions, concurrency, or public interfaces changed;
+- several components or tasks must integrate;
+- the implementation deviates from the plan;
+- the user requests review;
+- the change is about to merge and a missed defect would be costly.
 
-**Placeholders:**
-- `{DESCRIPTION}` - Brief summary of what you built
-- `{PLAN_OR_REQUIREMENTS}` - What it should do
-- `{BASE_SHA}` - Starting commit
-- `{HEAD_SHA}` - Ending commit
+Use a fresh reviewer context when the runtime supports it reliably. Otherwise perform a separate review pass from the merge-base diff.
 
-**3. Act on feedback:**
-- Fix Critical issues immediately
-- Fix Important issues before proceeding
-- Note Minor issues for later
-- Push back if reviewer is wrong (with reasoning)
+## Prepare the review package
 
-## Example
+Provide:
 
-```
-[Just completed Task 2: Add verification function]
+- concise change description;
+- exact requirements or plan path;
+- merge-base and head SHAs;
+- changed-file list and full diff;
+- verification commands and observed results;
+- known risks or intentionally unverified behavior.
 
-You: Let me request code review before proceeding.
+Use [code-reviewer.md](code-reviewer.md) when dispatching a reviewer. Do not pass accumulated conversation history or conclusions that coach the verdict.
 
-BASE_SHA=$(git log --oneline | grep "Task 1" | head -1 | awk '{print $1}')
-HEAD_SHA=$(git rev-parse HEAD)
+## Review expectations
 
-[Dispatch code reviewer subagent]
-  DESCRIPTION: Added verifyIndex() and repairIndex() with 4 issue types
-  PLAN_OR_REQUIREMENTS: Task 2 from docs/superpowers/plans/deployment-plan.md
-  BASE_SHA: a7981ec
-  HEAD_SHA: 3df7661
+The reviewer must check:
 
-[Subagent returns]:
-  Strengths: Clean architecture, real tests
-  Issues:
-    Important: Missing progress indicators
-    Minor: Magic number (100) for reporting interval
-  Assessment: Ready to proceed
+- acceptance-criteria compliance;
+- correctness and preservation of existing behavior;
+- unnecessary scope or refactoring;
+- test and verification quality;
+- security, migration, rollback, and compatibility implications where relevant.
 
-You: [Fix progress indicators]
-[Continue to Task 3]
-```
+Every blocking finding needs concrete file and line evidence.
 
-## Integration with Workflows
+## Respond to findings
 
-**Subagent-Driven Development:**
-- Review after EACH task
-- Catch issues before they compound
-- Fix before moving to next task
+- Fix Critical findings before proceeding.
+- Fix Important findings or provide evidence-based disagreement.
+- Record Minor findings when they do not justify more scope.
+- Use one bounded repair pass; apply the workflow circuit breaker before a third review cycle.
+- Re-run verification for amended behavior.
 
-**Executing Plans:**
-- Review after each task or at natural checkpoints
-- Get feedback, apply, continue
+## Completion
 
-**Ad-Hoc Development:**
-- Review before merge
-- Review when stuck
-
-## Red Flags
-
-**Never:**
-- Skip review because "it's simple"
-- Ignore Critical issues
-- Proceed with unfixed Important issues
-- Argue with valid technical feedback
-
-**If reviewer wrong:**
-- Push back with technical reasoning
-- Show code/tests that prove it works
-- Request clarification
-
-See template at: [code-reviewer.md](code-reviewer.md)
+Report the review method, findings, resolutions, remaining risks, and readiness verdict. A reviewer report is evidence to inspect, not proof by itself.

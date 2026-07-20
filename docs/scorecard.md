@@ -6,7 +6,7 @@ The current FK branch targets a minimum score of 9/10 in every operational categ
 |---|---:|---|
 | Method | 9+ | Risk-tier routing and explicit escalation |
 | QA | 9+ | Risk-based tests, verification, diff checks, CI |
-| Codex integration | 9+ | Native manifest, empty hooks, runtime notes |
+| Codex integration | 9+ | Native manifest, no hook discovery surface, runtime notes |
 | Efficiency | 9+ | No universal planning or brainstorming |
 | Preservation | 9+ | Global no-regression and focused-change rules |
 | Multi-agent safety | 9+ | Entry gates and circuit breakers |

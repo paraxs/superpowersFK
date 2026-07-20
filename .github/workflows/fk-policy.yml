@@ -24,7 +24,10 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          bash tests/fk/test-policy.sh 2>&1 | tee fk-policy-output.txt
+          {
+            bash tests/fk/test-policy.sh
+            bash tests/fk/test-sdd-workspace.sh
+          } 2>&1 | tee fk-policy-output.txt
       - name: Upload policy diagnostics
         if: always()
         uses: actions/upload-artifact@v4
@@ -51,3 +54,22 @@ jobs:
         env:
           CODEX_VERSION: '0.144.6'
         run: bash tests/fk/test-codex-install.sh
+
+  remote-main-install:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs:
+      - policy
+      - codex-install
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          show-progress: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install the published plugin from remote main
+        env:
+          CODEX_VERSION: '0.144.6'
+        run: bash tests/fk/test-remote-main-install.sh

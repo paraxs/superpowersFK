@@ -9,3 +9,8 @@
 - Added Codex-specific model-inheritance, worktree, lifecycle, and privacy guidance.
 - Replaced inherited project branding and runtime links with FK-owned metadata.
 - Added repository instructions, policy regression tests, CI, PR template, and evaluation criteria.
+- Removed the duplicate PR template and all legacy non-Codex harness, hook, branding, and packaging surfaces.
+- Renamed the entry skill to `using-codex-workflow` and removed legacy namespace references and upstream-specific language.
+- Aligned plan execution, review requests, worktrees, and skill authoring with the four FK risk tiers.
+- Reduced `writing-skills` to a focused Codex authoring guide with proportional behavioral testing.
+- Added regression coverage for case-insensitive path collisions, legacy namespaces, contradictory workflow rules, isolated installation, and installation from remote `main`.

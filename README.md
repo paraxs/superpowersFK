@@ -4,6 +4,8 @@ A pragmatic, preservation-first skill set for OpenAI Codex.
 
 The project is designed for real repositories where working behavior must survive agent-driven changes. It uses proportional planning, root-cause debugging, risk-based testing, isolated workspaces, evidence-based completion, and bounded multi-agent execution.
 
+This repository publishes a Codex-only plugin surface. Legacy harness manifests, automatic session hooks, external visual companions, and unused branding assets are intentionally excluded.
+
 ## Core principles
 
 - Preserve working behavior, UI, exports, interfaces, and compatibility by default.
@@ -36,7 +38,7 @@ Multiple subsystems, unresolved architecture, security, concurrency, destructive
 
 ## Included skills
 
-- `using-superpowers` — proportional workflow router and global preservation rules
+- `using-codex-workflow` — proportional workflow router and global preservation rules
 - `brainstorming` — explicit design work only when decisions are genuinely unresolved
 - `writing-plans` — durable plans for complex multi-step work
 - `systematic-debugging` — evidence and root cause before fixes
@@ -72,6 +74,14 @@ CODEX_VERSION=0.144.6 bash tests/fk/test-codex-install.sh
 ```
 
 The test installs Codex into a temporary directory, stages the current manifest and complete skills tree, installs the plugin through a local Codex marketplace, checks the cached copy and enabled configuration, and removes all temporary files afterwards.
+
+After a release reaches `main`, verify the public GitHub marketplace path itself:
+
+```bash
+CODEX_VERSION=0.144.6 bash tests/fk/test-remote-main-install.sh
+```
+
+This second test clones the published marketplace from `main`, installs `codex-workflow-fk@codex-workflow-fk`, and verifies that the FK router is present in Codex's cache.
 
 For Codex CLI multi-agent workflows, enable the feature in `~/.codex/config.toml`:
 

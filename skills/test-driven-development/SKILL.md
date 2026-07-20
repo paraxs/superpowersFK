@@ -1,6 +1,6 @@
 ---
 name: test-driven-development
-description: Use for behavior changes, business logic, regressions, APIs, persistence, calculations, permissions, retrieval, and other code where an automated failing test can prove the requirement. Use risk-based verification for purely visual, textual, generated, or configuration-only changes.
+description: Apply risk-based red-green-refactor or an explicit alternative verification method. Use when changing behavior, business logic, regressions, APIs, persistence, calculations, permissions, retrieval, or other code where a failing test can prove the requirement.
 ---
 
 # Risk-Based Test-Driven Development

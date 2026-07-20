@@ -18,7 +18,6 @@
     "code-review"
   ],
   "skills": "./skills/",
-  "hooks": {},
   "interface": {
     "displayName": "Codex Workflow FK",
     "shortDescription": "Pragmatic coding workflows with hard safety limits",

@@ -1,9 +1,9 @@
 ---
-name: using-superpowers
-description: Use at the start of coding work to choose the smallest reliable workflow for the task. Applies repository and user instructions first, classifies risk, and invokes only the skills that add measurable value.
+name: using-codex-workflow
+description: Route coding work through the smallest reliable FK workflow while applying repository and user instructions first. Use when starting a coding task to classify risk and select only the skills that add measurable value.
 ---
 
-# Using Superpowers FK
+# Using Codex Workflow FK
 
 ## Purpose
 

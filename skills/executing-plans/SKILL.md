@@ -1,70 +1,81 @@
 ---
 name: executing-plans
-description: Use when you have a written implementation plan to execute in a separate session with review checkpoints
+description: Execute an approved implementation plan with proportional checkpoints, verification, and scope control. Use when a durable plan already exists and inline execution is safer or cheaper than multi-agent coordination.
 ---
 
 # Executing Plans
 
-## Overview
+## Purpose
 
-Load plan, review critically, execute all tasks, report when complete.
+Execute an approved plan without turning the plan into an excuse for ceremony, scope growth, or unnecessary delegation.
 
-**Announce at start:** "I'm using the executing-plans skill to implement this plan."
+## Entry conditions
 
-**Note:** Tell your human partner that Superpowers works much better with access to subagents. The quality of its work will be significantly higher if run on a platform with subagent support (Claude Code, Codex CLI, Codex App, and Copilot CLI all qualify; see the per-platform tool refs in `../using-superpowers/references/`). If subagents are available, use superpowers:subagent-driven-development instead of this skill.
+Use this skill when:
 
-## The Process
+- a written implementation plan exists;
+- requirements and task boundaries are sufficiently clear;
+- the work should continue in the current session;
+- `subagent-driven-development` is unavailable or its complete entry gate does not pass.
 
-### Step 1: Load and Review Plan
-1. Read plan file
-2. Review critically - identify any questions or concerns about the plan
-3. If concerns: Raise them with your human partner before starting
-4. If no concerns: Create todos for the plan items and proceed
+If two or more genuinely independent tasks pass the SDD entry gate and delegation adds clear value, use `subagent-driven-development`. Subagent availability alone is not a reason to delegate.
 
-### Step 2: Execute Tasks
+## Process
+
+### 1. Review the plan
+
+- Read the plan, repository instructions, and current workspace state.
+- Map every acceptance criterion to a task.
+- Identify missing interfaces, unsafe assumptions, or commands that no longer match the repository.
+- Resolve only material blockers before starting; do not reopen settled requirements.
+
+### 2. Establish the baseline
+
+- Record the merge base and current branch.
+- Use `using-git-worktrees` only when isolation is justified and not already provided.
+- Run the narrowest relevant baseline verification.
+- Do not modify dependencies or lockfiles merely to prepare the workspace.
+
+### 3. Execute task by task
 
 For each task:
-1. Mark as in_progress
-2. Follow each step exactly (plan has bite-sized steps)
-3. Run verifications as specified
-4. Mark as completed
 
-### Step 3: Complete Development
+1. Mark it in progress.
+2. Confirm its file and interface boundary.
+3. Apply risk-based testing or the explicit alternative verification in the plan.
+4. Make the smallest coherent change.
+5. Run targeted and relevant surrounding checks.
+6. Inspect the task diff before marking it complete.
 
-After all tasks complete and verified:
-- Announce: "I'm using the finishing-a-development-branch skill to complete this work."
-- **REQUIRED SUB-SKILL:** Use superpowers:finishing-a-development-branch
-- Follow that skill to verify tests, present options, execute choice
+Commit only when commits are part of the requested workflow. Never silently expand the task.
 
-## When to Stop and Ask for Help
+### 4. Apply stop conditions
 
-**STOP executing immediately when:**
-- Hit a blocker (missing dependency, test fails, instruction unclear)
-- Plan has critical gaps preventing starting
-- You don't understand an instruction
-- Verification fails repeatedly
+Stop and revise the plan when:
 
-**Ask for clarification rather than guessing.**
+- evidence contradicts a requirement or interface;
+- the task crosses an unplanned architecture, security, migration, or shared-state boundary;
+- the same failure class appears twice;
+- more than two repair/re-review cycles would be required;
+- a task exceeds its approved size or becomes disproportionate.
 
-## When to Revisit Earlier Steps
+Report the evidence and smallest safe decision instead of guessing.
 
-**Return to Review (Step 1) when:**
-- Partner updates the plan based on your feedback
-- Fundamental approach needs rethinking
+### 5. Complete the plan
 
-**Don't force through blockers** - stop and ask.
+- Inspect the whole diff from the merge base.
+- Run the full relevant verification suite.
+- Check acceptance criteria line by line.
+- Record remaining risks and unverified behavior.
+- Use `finishing-a-development-branch` only when branch integration or PR handling is actually requested.
 
-## Remember
-- Review plan critically first
-- Follow plan steps exactly
-- Don't skip verifications
-- Reference skills when plan says to
-- Stop when blocked, don't guess
-- Never start implementation on main/master branch without explicit user consent
+## Completion report
 
-## Integration
+Report:
 
-**Required workflow skills:**
-- **superpowers:using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)
-- **superpowers:writing-plans** - Creates the plan this skill executes
-- **superpowers:finishing-a-development-branch** - Complete development after all tasks
+- completed tasks;
+- changed files;
+- verification commands and observed results;
+- deviations from the plan;
+- stop conditions approached or triggered;
+- remaining risks and branch state.

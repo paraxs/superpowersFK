@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: Use only when important product, architecture, UX, security, data, or integration decisions remain unresolved, or when the user explicitly requests design-first exploration. Do not invoke for focused fixes or complete specifications.
+description: Resolve important product, architecture, UX, security, data, or integration decisions. Use when material choices remain unresolved or the user explicitly requests design-first exploration; do not invoke for focused fixes or complete specifications.
 ---
 
 # Proportional Brainstorming

@@ -25,7 +25,7 @@ Never repeat a question already answered by the request, repository, issue, spec
 
 ## Workflow policy
 
-Classify work through `skills/using-superpowers/SKILL.md`.
+Classify work through `skills/using-codex-workflow/SKILL.md`.
 
 - Tier 0: inspection only
 - Tier 1: focused local change

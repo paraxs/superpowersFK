@@ -1,18 +1,28 @@
-# FK Policy Tests
+# FK Validation
 
 Run:
 
 ```bash
 bash tests/fk/test-policy.sh
+bash tests/fk/test-sdd-workspace.sh
+bash tests/fk/test-codex-install.sh
 ```
 
-The checks protect the behavioral contract of Codex Workflow FK:
+These checks protect the Codex Workflow FK contract:
 
-- proportional risk tiers remain present;
-- universal brainstorming and absolute TDD wording stays removed;
-- multi-agent task and retry limits remain present;
-- Codex model inheritance is disclosed;
-- plugin metadata points only to the FK repository;
-- upstream branding and runtime links do not return to active documentation or the Codex manifest.
+- proportional risk tiers and circuit breakers remain present;
+- case-insensitive path collisions are rejected;
+- every skill has valid frontmatter and remains below 500 lines;
+- the concise `writing-skills` limit remains enforced;
+- plugin metadata points only to the FK repository and omits hook discovery;
+- upstream namespaces, branding, and harness language do not return to active surfaces;
+- the SDD workspace remains isolated and self-ignoring;
+- the complete plugin installs with a real Codex CLI.
 
-These static checks do not replace real Codex acceptance sessions. They prevent policy regressions that can be detected deterministically in CI.
+After a release reaches `main`, also run:
+
+```bash
+bash tests/fk/test-remote-main-install.sh
+```
+
+Static checks and installation tests do not replace real Codex acceptance sessions. Record representative Tier 1, Tier 2, Tier 3, and circuit-breaker behavior separately.

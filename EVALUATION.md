@@ -8,7 +8,7 @@ Scale: 1–10. A score of 9 means the category has explicit controls, practical 
 |---|---:|---|
 | Methodological quality | 9.3 | Four risk tiers, root-cause routing, explicit escalation and preservation rules |
 | Quality assurance | 9.5 | Risk-based TDD, fresh verification, full-diff inspection requirements, policy CI, and installation CI |
-| Codex integration | 9.3 | Native manifest, empty hooks object, FK marketplace, real installation and enablement with Codex CLI 0.144.6 |
+| Codex integration | 9.3 | Native manifest without hook discovery surfaces, FK marketplace, real installation and enablement with Codex CLI 0.144.6 |
 | Efficiency | 9.2 | No universal brainstorming gate, short outlines for Tier 2, SDD only after entry gate |
 | Existing-code protection | 9.6 | Global preservation rules, no unrelated refactoring, targeted edits, compatibility checks |
 | Multi-agent safety | 9.3 | 8-file and 300-line task limits, two-cycle maximum, compaction and same-failure breakers |

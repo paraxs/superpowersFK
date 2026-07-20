@@ -83,7 +83,7 @@ installed_skill_count="$(find "$CACHE/skills" -name SKILL.md -type f | wc -l | t
 [[ "$installed_skill_count" == "$source_skill_count" ]]
 
 for skill in \
-  using-superpowers \
+  using-codex-workflow \
   brainstorming \
   systematic-debugging \
   test-driven-development \
