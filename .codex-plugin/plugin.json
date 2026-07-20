@@ -1,32 +1,28 @@
 {
-  "name": "superpowers",
-  "version": "6.1.1",
-  "description": "An agentic skills framework & software development methodology that works: planning, TDD, debugging, and collaboration workflows.",
+  "name": "codex-workflow-fk",
+  "version": "1.0.0",
+  "description": "Pragmatic, preservation-first planning, debugging, testing, review, and bounded multi-agent workflows for Codex.",
   "author": {
-    "name": "Jesse Vincent",
-    "email": "jesse@fsck.com",
-    "url": "https://github.com/obra"
+    "name": "Franz Kofler",
+    "url": "https://github.com/paraxs"
   },
-  "homepage": "https://github.com/obra/superpowers",
-  "repository": "https://github.com/obra/superpowers",
+  "homepage": "https://github.com/paraxs/superpowersFK",
+  "repository": "https://github.com/paraxs/superpowersFK",
   "license": "MIT",
   "keywords": [
-    "brainstorming",
-    "subagent-driven-development",
-    "skills",
-    "planning",
-    "tdd",
-    "debugging",
-    "code-review",
-    "workflow"
+    "codex",
+    "preservation-first",
+    "risk-based-testing",
+    "systematic-debugging",
+    "bounded-agents",
+    "code-review"
   ],
   "skills": "./skills/",
-  "hooks": {},
   "interface": {
-    "displayName": "Superpowers",
-    "shortDescription": "Planning, TDD, debugging, and delivery workflows for coding agents",
-    "longDescription": "Use Superpowers to guide agent work through brainstorming, implementation planning, test-driven development, systematic debugging, parallel execution, code review, and finish-the-branch workflows.",
-    "developerName": "Jesse Vincent",
+    "displayName": "Codex Workflow FK",
+    "shortDescription": "Pragmatic coding workflows with hard safety limits",
+    "longDescription": "Guide Codex through proportional planning, root-cause debugging, risk-based testing, isolated changes, independent review, evidence-based completion, and bounded multi-agent execution.",
+    "developerName": "Franz Kofler",
     "category": "Developer Tools",
     "capabilities": [
       "Interactive",
@@ -34,15 +30,11 @@
       "Write"
     ],
     "defaultPrompt": [
-      "I've got an idea for something I'd like to build.",
-      "Let's add a feature to this project."
+      "Inspect this repository and make the smallest safe change.",
+      "Fix this bug without breaking existing behavior."
     ],
-    "websiteURL": "https://github.com/obra/superpowers",
-    "privacyPolicyURL": "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement",
-    "termsOfServiceURL": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
-    "brandColor": "#F59E0B",
-    "composerIcon": "./assets/superpowers-small.svg",
-    "logo": "./assets/app-icon.png",
+    "websiteURL": "https://github.com/paraxs/superpowersFK",
+    "brandColor": "#8F1D1D",
     "screenshots": []
   }
 }

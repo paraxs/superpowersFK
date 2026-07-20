@@ -3,10 +3,10 @@
 Use this template when dispatching an implementer subagent.
 
 ```
-Subagent (general-purpose):
+Implementer:
   description: "Implement Task N: [task name]"
-  model: [MODEL — REQUIRED: choose per SKILL.md Model Selection; an omitted
-         model silently inherits the session's most expensive one]
+  model: [OPTIONAL — set only when the active runtime supports explicit
+         per-child selection; otherwise omit and disclose inheritance]
   prompt: |
     You are implementing Task N: [task name]
 

@@ -108,7 +108,7 @@ Skip any step = lying, not verifying
 ## Why This Matters
 
 From 24 failure memories:
-- your human partner said "I don't believe you" - trust broken
+- the user could not rely on an unsupported completion claim
 - Undefined functions shipped - would crash
 - Missing requirements shipped - incomplete features
 - Time wasted on false completion → redirect → rework
