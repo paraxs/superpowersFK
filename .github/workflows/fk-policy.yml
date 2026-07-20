@@ -11,16 +11,27 @@ permissions:
   contents: read
 
 jobs:
-  policy-and-install:
+  policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          show-progress: false
+      - name: Validate FK workflow policy
+        run: bash tests/fk/test-policy.sh
+
+  codex-install:
+    needs: policy
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          show-progress: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate FK workflow policy
-        run: bash tests/fk/test-policy.sh
       - name: Install plugin with real Codex CLI
         env:
           CODEX_VERSION: '0.144.6'
