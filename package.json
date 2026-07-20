@@ -1,23 +1,21 @@
 {
   "name": "codex-workflow-fk",
   "version": "1.0.0",
+  "private": true,
   "description": "Pragmatic, preservation-first skill workflows for OpenAI Codex",
-  "type": "module",
-  "main": ".opencode/plugins/superpowers.js",
+  "license": "MIT",
+  "repository": "https://github.com/paraxs/superpowersFK",
+  "scripts": {
+    "test": "bash tests/fk/test-policy.sh && bash tests/fk/test-codex-install.sh",
+    "test:policy": "bash tests/fk/test-policy.sh",
+    "test:codex-install": "bash tests/fk/test-codex-install.sh"
+  },
   "keywords": [
     "codex",
     "skills",
-    "testing",
-    "debugging",
-    "review",
+    "risk-based-testing",
+    "systematic-debugging",
+    "bounded-agents",
     "workflow"
-  ],
-  "pi": {
-    "extensions": [
-      "./.pi/extensions/superpowers.ts"
-    ],
-    "skills": [
-      "./skills"
-    ]
-  }
+  ]
 }
