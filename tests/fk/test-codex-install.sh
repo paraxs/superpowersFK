@@ -14,7 +14,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-mkdir -p "$PLUGIN" "$CODEX_HOME" "$NPM_PREFIX"
+mkdir -p "$PLUGIN" "$MARKETPLACE/.agents/plugins" "$CODEX_HOME" "$NPM_PREFIX"
 cp -R "$ROOT/.codex-plugin" "$PLUGIN/"
 cp -R "$ROOT/skills" "$PLUGIN/"
 
